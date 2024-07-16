@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pygments-plugin-shellconsole" # change this to a package name for your plugin
+name = "pygments-shell-console" # change this to a package name for your plugin
 version = "0.0.1"
 dependencies = ["pygments"]
 readme = "README.md"
