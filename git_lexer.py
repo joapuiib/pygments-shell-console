@@ -6,8 +6,21 @@ from pygments.lexer import RegexLexer, ExtendedRegexLexer, include, bygroups, \
 from pygments.token import Token, Punctuation, Whitespace, \
     Text, Comment, Operator, Keyword, Name, String, Number, Generic
 from pygments.lexers.diff import DiffLexer
+from pygments.token import STANDARD_TYPES
 
 import re
+
+__all__ = ['GitLexer']
+
+STANDARD_TYPES.update({
+    Token.Git: 'git',
+    Token.Git.BranchLine: 'git-bl',
+    Token.Git.CommitHash: 'git-ch',
+    Token.Git.CommitDate: 'git-cd',
+    Token.Git.CommitMessage: 'git-cm',
+    Token.Git.CommitAuthor: 'git-ca',
+    Token.Git.Refs: 'git-r',
+})
 
 class GitLexer(Lexer):
     name = "Git"

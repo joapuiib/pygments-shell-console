@@ -9,12 +9,22 @@ from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
 from git_lexer import GitLexer
+from pygments.token import STANDARD_TYPES
 
 import re
 
+__all__ = ['ShellConsoleLexer']
+
+STANDARD_TYPES.update({
+    Token.Generic.Prompt.UserHost: 'gp-uh',
+    Token.Generic.Prompt.Directory: 'gp-d',
+    Token.Generic.Prompt.GitBranch: 'gp-gb',
+    Token.Generic.Prompt.VirtualEnv: 'gp-ve',
+})
+
 class ShellConsoleLexer(Lexer):
     name = "Shell Console"
-    aliases = ["shell-console", "shell", "console"]
+    aliases = ["shellconsole", "shell-console", "shell", "console"]
     filenames = ['*.sh-session', '*.shell-session']
     mimetypes = ['application/x-shell-session', 'application/x-sh-session']
     url = 'https://en.wikipedia.org/wiki/Unix_shell'
