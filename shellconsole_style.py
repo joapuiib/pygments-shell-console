@@ -19,5 +19,9 @@ class ShellConsoleStyle(Style):
         Token.Git.CommitMessage: "#FFFFFF",
         Token.Git.CommitAuthor: "#aaaaaa",
         Token.Git.Refs: "#00ffff",
+
+        Token.Git.Untracked: "#f00",
+        Token.Git.Modified: "#f00",
+        Token.Git.Staged: "#008000",
     })
     del styles[Token.Generic.Prompt]
