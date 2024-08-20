@@ -154,6 +154,9 @@ class ShellConsoleLexer(Lexer):
                 # print(f"\n4. yielding pos={pos+i}, t={t}, v={v}")
                 yield pos+i, t, v
         if output:
-            for i, t, v in custom_lexer.get_tokens_unprocessed(output):
-                # print(f"\n3. yielding pos={pos+i}, t={t}, v={v}")
-                yield pos+i, t, v
+            if custom_lexer:
+                for i, t, v in custom_lexer.get_tokens_unprocessed(output):
+                    # print(f"\n2. yielding pos={pos+i}, t={t}, v={v}")
+                    yield pos+i, t, v
+            else:
+                yield pos, Generic.Output, output
