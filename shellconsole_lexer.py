@@ -8,7 +8,7 @@ from pygments.token import Token, Punctuation, Whitespace, \
 from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
-from git_lexer import GitLexer
+from git_lexer import GitLogLexer, GitStatusLexer
 from pygments.token import STANDARD_TYPES
 
 import re
@@ -45,15 +45,17 @@ class ShellConsoleLexer(Lexer):
     def get_tokens_unprocessed(self, text):
         innerlexer = self._innerLexerCls(**self.options)
         difflexer = DiffLexer()
-        gitlexer = GitLexer()
+        gitloglexer = GitLogLexer()
+        gitstatuslexer = GitStatusLexer()
 
         pos = 0
         # Bash command
         curcode = ''
         insertions = []
         backslash_continuation = False
-        diff_continuation = False
-        git_continuation = False
+
+        custom_lexer = None
+        output = ""
 
         for match in line_re.finditer(text):
             line = match.group()
@@ -76,8 +78,16 @@ class ShellConsoleLexer(Lexer):
                 # To support output lexers (say diff output), the output
                 # needs to be broken by prompts whenever the output lexer
                 # changes.
-                diff_continuation = False
-                git_continuation = False
+
+                if output:
+                    if custom_lexer:
+                        for i, t, v in custom_lexer.get_tokens_unprocessed(output):
+                            # print(f"\n2. yielding pos={pos+i}, t={t}, v={v}")
+                            yield pos+i, t, v
+                    else:
+                        yield pos, Generic.Output, output
+                    output = ''
+                    custom_lexer = None
 
                 if not insertions:
                     pos = match.start()
@@ -127,19 +137,14 @@ class ShellConsoleLexer(Lexer):
                         # print(f"\n1. yielding pos={pos+i}, t={t}, v={v}")
                         yield pos+i, t, v
 
-                if line.startswith('diff ') or diff_continuation:
-                    diff_continuation = True
-                    for i, t, v in difflexer.get_tokens_unprocessed(line):
-                        # print(f"\n2. yielding pos={match.start()+i}, t={t}, v={v}")
-                        yield match.start()+i, t, v
-                elif curcode.startswith('git') or git_continuation:
-                    git_continuation = True
-                    for i, t, v in gitlexer.get_tokens_unprocessed(line):
-                        # print(f"\n2. yielding pos={match.start()+i}, t={t}, v={v}")
-                        yield match.start()+i, t, v
-                else:
-                    # print(f"\n3. yielding pos={match.start()}, t={Generic.Output}, v={line}")
-                    yield match.start(), Generic.Output, line
+                if 'diff' in curcode:
+                    custom_lexer = difflexer
+                elif curcode.startswith('git lg'):
+                    custom_lexer = gitloglexer
+                elif curcode.startswith('git status'):
+                    custom_lexer = gitstatuslexer
+
+                output += line
                 insertions = []
                 curcode = ''
 
@@ -147,4 +152,8 @@ class ShellConsoleLexer(Lexer):
             for i, t, v in do_insertions(insertions,
                                          innerlexer.get_tokens_unprocessed(curcode)):
                 # print(f"\n4. yielding pos={pos+i}, t={t}, v={v}")
+                yield pos+i, t, v
+        if output:
+            for i, t, v in custom_lexer.get_tokens_unprocessed(output):
+                # print(f"\n3. yielding pos={pos+i}, t={t}, v={v}")
                 yield pos+i, t, v

@@ -20,9 +20,12 @@ STANDARD_TYPES.update({
     Token.Git.CommitMessage: 'git-cm',
     Token.Git.CommitAuthor: 'git-ca',
     Token.Git.Refs: 'git-r',
+    Token.Git.Untracked: 'git-untr',
+    Token.Git.Modified: 'git-mod',
+    Token.Git.Staged: 'git-stg',
 })
 
-class GitLexer(Lexer):
+class GitLogLexer(Lexer):
     name = "Git"
     aliases = ["git"]
     filenames = ['*.git']
@@ -80,3 +83,30 @@ class GitLexer(Lexer):
 
             else:
                 yield match.start(), Generic.Output, line
+
+class GitStatusLexer(RegexLexer):
+    tokens = {
+        'root': [
+            (r'\s*Untracked files:\n', Text, 'untracked'),
+            (r'\s*Changes not staged for commit:\n', Text, 'modified'),
+            (r'\s*Changes to be committed:\n', Text, 'staged'),
+        ],
+        'untracked': [
+            (r'^\s+\(.*\)\n', Text),
+            (r'^[^\n]+\n', Token.Git.Untracked),
+            (r'^\s+\n', Text, '#pop'),
+        ],
+        'modified': [
+            (r'^\s+\(.*\)\n', Text),
+            (r'^[^\n]+\n', Token.Git.Modified),
+            (r'^\s+\n', Text, '#pop'),
+        ],
+        'staged': [
+            (r'^\s+\(.*\)\n', Text),
+            (r'^[^\n]+\n', Token.Git.Staged),
+            (r'^\s+\n', Text, '#pop'),
+        ],
+    }
+
+
+
