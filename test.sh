@@ -1,2 +1,2 @@
 #!/bin/bash
-./venv/bin/pygmentize -l shellconsole -O style=shellconsole-style test.exmpl
+./venv/bin/pygmentize -l shellconsole -O style=shellconsole-style test.exmpl $@

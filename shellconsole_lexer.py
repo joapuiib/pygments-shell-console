@@ -8,7 +8,7 @@ from pygments.token import Token, Punctuation, Whitespace, \
 from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
-from git_lexer import GitLogLexer, GitStatusLexer
+from git_lexer import GitLogLexer, GitStatusLexer, GitShowLexer
 from pygments.token import STANDARD_TYPES
 
 import re
@@ -31,11 +31,41 @@ class ShellConsoleLexer(Lexer):
     version_added = '1.0'
 
     _bare_continuation = False
-    _venv = re.compile(r'^(\([^)]*\))(\s*)')
 
-    _ps1rgx = re.compile(
-        r'^\[?(?P<user_host>[^\s@]+@[^\s]+?)(?:\s+|\:)(?P<current_dir>[^\s\]]+)(?:\s+(?P<git_branch>\([^)]+\)))?\]?\s*[$#%]\s*(?P<command>.*\n?)')
-    _ps1_groups = [Token.Generic.Prompt.UserHost, Token.Generic.Prompt.Directory, Token.Generic.Prompt.GitBranch]
+    _ps1_groups = [
+        r'(?P<venv>\([^\)]*\))?', # Virtualenv
+        r'(\s*)?', # Whitespace
+        r'\[?', # Start bracketed prompt
+        r'(?P<user_host>[^\s@]+@[^\s]+?)', # user@host
+        r'(\s*)', # Whitespace
+        r'(?:(\:)|(\s+))', # Separator: colon or space
+        r'(\s*)', # Whitespace
+        r'(?P<current_dir>[^\s\]]+)', # Current directory
+        r'(?:(\s+)(?P<git_branch>\([^)]+\)))?', # Whitespace + Git branch
+        r'\]?', # End bracketed prompt
+        r'(\s*)', # Whitespace
+        r'([$#%]\n?)', # End of prompt
+        r'(\s*)', # Whitespace
+        r'(?P<command>.*\n?)' # Command
+    ]
+    _ps1rgx = re.compile(r''.join(_ps1_groups))
+    print(_ps1rgx.pattern)
+
+    _ps1_tokens = [
+            Token.Generic.Prompt.VirtualEnv,
+            Whitespace,
+            Token.Generic.Prompt.UserHost,
+            Whitespace,
+            Token.Generic.Prompt, # Separator: colon
+            Whitespace, # Separator: space
+            Whitespace,
+            Token.Generic.Prompt.Directory,
+            Whitespace,
+            Token.Generic.Prompt.GitBranch,
+            Whitespace,
+            Token.Generic.Prompt,
+            Whitespace
+    ]
 
 
     _ps2 = '> '
@@ -47,6 +77,7 @@ class ShellConsoleLexer(Lexer):
         difflexer = DiffLexer()
         gitloglexer = GitLogLexer()
         gitstatuslexer = GitStatusLexer()
+        gitshowlexer = GitShowLexer()
 
         pos = 0
         # Bash command
@@ -59,18 +90,6 @@ class ShellConsoleLexer(Lexer):
 
         for match in line_re.finditer(text):
             line = match.group()
-
-            # Check for virtualenv prompt
-            venv_match = self._venv.match(line)
-            if venv_match:
-                venv = venv_match.group(1)
-                venv_whitespace = venv_match.group(2)
-                insertions.append((len(curcode),
-                                   [(0, Generic.Prompt.VirtualEnv, venv)]))
-                if venv_whitespace:
-                    insertions.append((len(curcode),
-                                       [(0, Text, venv_whitespace)]))
-                line = line[venv_match.end():]
 
             m = self._ps1rgx.match(line)
             ## If line starts with a prompt
@@ -93,20 +112,23 @@ class ShellConsoleLexer(Lexer):
                     pos = match.start()
 
                 prompt_pos = 0
-                for i, t in enumerate(self._ps1_groups):
+                for i, t in enumerate(self._ps1_tokens):
                     if m.group(i + 1):
                         group_pos = m.start(i + 1)
                         before_content = line[prompt_pos:group_pos]
-                        insertions.append((len(curcode), [(0, Generic.Prompt, before_content)]))
+                        if before_content:
+                            insertions.append((len(curcode), [(0, Generic.Prompt, before_content)]))
 
                         insertions.append((len(curcode), [(0, t, m.group(i + 1))]))
                         prompt_pos += len(before_content) + len(m.group(i+1))
 
-                group_pos = m.start(4)
+                last_group_index = len(self._ps1_tokens) + 1
+                group_pos = m.start(last_group_index)
                 before_content = line[prompt_pos:group_pos]
-                insertions.append((len(curcode), [(0, Generic.Prompt, before_content)]))
+                if before_content:
+                    insertions.append((len(curcode), [(0, Generic.Prompt, before_content)]))
 
-                curcode += m.group(4)
+                curcode += m.group(last_group_index)
                 backslash_continuation = curcode.endswith('\\\n')
 
             # If line is a continuation of a previous line
@@ -143,6 +165,8 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = gitloglexer
                 elif curcode.startswith('git status'):
                     custom_lexer = gitstatuslexer
+                elif curcode.startswith('git show'):
+                    custom_lexer = gitshowlexer
 
                 output += line
                 insertions = []

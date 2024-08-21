@@ -18,7 +18,13 @@ class ShellConsoleStyle(Style):
         Token.Git.CommitDate: "#008000",
         Token.Git.CommitMessage: "#FFFFFF",
         Token.Git.CommitAuthor: "#aaaaaa",
+
         Token.Git.Refs: "#00ffff",
+        Token.Git.Refs.Tag: "#ffff00",
+        Token.Git.Refs.Head: "#00ffff",
+        Token.Git.Refs.Branch: "#00ff00",
+        Token.Git.Refs.RemoteHead: "#ffcc00",
+        Token.Git.Refs.RemoteBranch: "#ffcc00",
 
         Token.Git.Untracked: "#f00",
         Token.Git.Modified: "#f00",

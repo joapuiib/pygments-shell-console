@@ -23,6 +23,13 @@ STANDARD_TYPES.update({
     Token.Git.Untracked: 'git-untr',
     Token.Git.Modified: 'git-mod',
     Token.Git.Staged: 'git-stg',
+    Token.Git.Show: 'git-show',
+    Token.Git.Show.Header: 'git-show-h',
+    Token.Git.Refs.RemoteHead: 'git-rh',
+    Token.Git.Refs.Head: 'git-h',
+    Token.Git.Refs.Tag: 'git-t',
+    Token.Git.Refs.RemoteBranch: 'git-rb',
+    Token.Git.Refs.Branch: 'git-b',
 })
 
 class GitLogLexer(Lexer):
@@ -33,16 +40,23 @@ class GitLogLexer(Lexer):
 
     _branch_line_rgx = r'([\|\\\/ ]*)'
     _logrgx_groups = [
-      _branch_line_rgx,     # Branch line
-      r'(\*)',          # Commit asterisk
-      _branch_line_rgx,     # Branch line
-      r'( +)',          # Space
-      r'([a-f0-9]+)',   # Commit hash
-      r'( +- +)',       # Commit separator
-      r'(\([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+\))', # Date
-      r'(\s+[0-9A-Za-zÀ-ÖØ-öø-ÿ \.\:\_\'\"\!\?\(\)\\\/\-]+ +- +)', # Commit message
-      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+)', # Author
-      r'((\([\w ->,:]+\))?)', # Refs
+      _branch_line_rgx,     # 1. Branch line
+      r'(\*)',              # 2. Commit asterisk
+      _branch_line_rgx,     # 3. Branch line
+      r'( +)',              # 4. Space
+      r'([a-f0-9]+)',       # 5. Commit hash
+      r'( +)',              # 6. Space
+      r'(-)',               # 7. Commit separator
+      r'( +)',              # 8. Space
+      r'(\([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+\))',  # 9. Date
+      r'(\s+)',                         # 10. Space
+      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ \.\:\_\'\"\!\?\(\)\\\/\-]+)', # 11. Commit message
+      r'( +)',                      # 12. Space
+      r'(-)',                       # 13. Commit separator
+      r'( +)',                      # 14. Space
+      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+)',  # 15. Author
+      r'( +)',                      # 16. Space
+      r'((\([\w ->,:]+\))?)',       # 17. Refs
       r'$', # End
     ]
 
@@ -54,10 +68,16 @@ class GitLogLexer(Lexer):
       3: Token.Git.BranchLine,
       4: Whitespace,
       5: Token.Git.CommitHash,
-      7: Token.Git.CommitDate,
-      8: Token.Git.CommitMessage,
-      9: Token.Git.CommitAuthor,
-      10: Token.Git.Refs,
+      6: Whitespace,
+      8: Whitespace,
+      9: Token.Git.CommitDate,
+      10: Whitespace,
+      11: Token.Git.CommitMessage,
+      12: Whitespace,
+      14: Whitespace,
+      15: Token.Git.CommitAuthor,
+      16: Whitespace,
+      17: Token.Git.Refs,
     }
 
     def get_tokens_unprocessed(self, text):
@@ -87,26 +107,60 @@ class GitLogLexer(Lexer):
 class GitStatusLexer(RegexLexer):
     tokens = {
         'root': [
-            (r'\s*Untracked files:\n', Text, 'untracked'),
-            (r'\s*Changes not staged for commit:\n', Text, 'modified'),
-            (r'\s*Changes to be committed:\n', Text, 'staged'),
+            (r'^\n', Whitespace),
+            (r'\s*Untracked files:\n', Generic.Output, 'untracked'),
+            (r'\s*Changes not staged for commit:\n', Generic.Output, 'modified'),
+            (r'\s*Changes to be committed:\n', Generic.Output, 'staged'),
+            (r'^.*\n', Generic.Output),
         ],
         'untracked': [
-            (r'^\s+\(.*\)\n', Text),
-            (r'^[^\n]+\n', Token.Git.Untracked),
-            (r'^\s+\n', Text, '#pop'),
+            (r'^\s*\n', Whitespace, '#pop'),
+            (r'^\s+\(.*\)\n', Generic.Output),
+            (r'^(\s*)([^\n]+)(\n)', bygroups(
+                Whitespace,
+                Token.Git.Untracked,
+                Whitespace
+            )),
         ],
         'modified': [
-            (r'^\s+\(.*\)\n', Text),
-            (r'^[^\n]+\n', Token.Git.Modified),
-            (r'^\s+\n', Text, '#pop'),
+            (r'^\s*\n', Whitespace, '#pop'),
+            (r'^\s+\(.*\)\n', Generic.Output),
+            (r'^(\s*)([^\n]+)(\n)', bygroups(
+                Whitespace,
+                Token.Git.Modified,
+                Whitespace
+            )),
         ],
         'staged': [
-            (r'^\s+\(.*\)\n', Text),
-            (r'^[^\n]+\n', Token.Git.Staged),
-            (r'^\s+\n', Text, '#pop'),
+            (r'^\s*\n', Whitespace, '#pop'),
+            (r'^\s+\(.*\)\n', Generic.Output),
+            (r'^(\s*)([^\n]+)(\n)', bygroups(
+                Whitespace,
+                Token.Git.Staged,
+                Whitespace
+            )),
         ],
     }
 
-
-
+class GitShowLexer(RegexLexer):
+    tokens = {
+        'root': [
+            (r'^\n', Whitespace),
+            (r'^diff .*\n', using(DiffLexer), 'diff'),
+            (r'^(commit [0-9a-f]+)', Token.Git.Show.Header, 'header'),
+            (r'^.*\n', Generic.Output),
+        ],
+        'header': [
+            (r' +', Whitespace),
+            (r'(\(|\)|->|,)', Token.Git.Show.Header),
+            (r'origin/HEAD', Token.Git.Refs.RemoteHead),
+            (r'HEAD', Token.Git.Refs.Head),
+            (r'tag: [\w.-]+', Token.Git.Refs.Tag),
+            (r'origin/[\w/_-]+', Token.Git.Refs.RemoteBranch),
+            (r'[\w/_-]+', Token.Git.Refs.Branch),
+            (r'\n', Whitespace, '#pop'),
+        ],
+        'diff': [
+            (r'^.*\n', using(DiffLexer)),
+        ],
+    }
