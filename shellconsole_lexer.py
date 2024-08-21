@@ -49,7 +49,7 @@ class ShellConsoleLexer(Lexer):
         r'(?P<command>.*\n?)' # Command
     ]
     _ps1rgx = re.compile(r''.join(_ps1_groups))
-    print(_ps1rgx.pattern)
+    # print(_ps1rgx.pattern)
 
     _ps1_tokens = [
             Token.Generic.Prompt.VirtualEnv,
