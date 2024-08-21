@@ -8,7 +8,7 @@ from pygments.token import Token, Punctuation, Whitespace, \
 from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
-from git_lexer import GitLogLexer, GitStatusLexer, GitShowLexer
+from git_lexer import GitLogLexer, GitPrettyLogLexer, GitStatusLexer, GitShowLexer
 from pygments.token import STANDARD_TYPES
 
 import re
@@ -75,7 +75,8 @@ class ShellConsoleLexer(Lexer):
     def get_tokens_unprocessed(self, text):
         innerlexer = self._innerLexerCls(**self.options)
         difflexer = DiffLexer()
-        gitloglexer = GitLogLexer()
+        git_log_lexer = GitLogLexer()
+        git_pretty_log_lexer = GitPrettyLogLexer()
         gitstatuslexer = GitStatusLexer()
         gitshowlexer = GitShowLexer()
 
@@ -154,8 +155,10 @@ class ShellConsoleLexer(Lexer):
             else:
                 if 'diff' in curcode:
                     custom_lexer = difflexer
-                elif curcode.startswith('git lg'):
-                    custom_lexer = gitloglexer
+                elif curcode.startswith('git lg') or curcode.startswith('git log --graph'):
+                    custom_lexer = git_pretty_log_lexer
+                elif curcode.startswith('git log'):
+                    custom_lexer = git_log_lexer
                 elif curcode.startswith('git status'):
                     custom_lexer = gitstatuslexer
                 elif curcode.startswith('git show'):
