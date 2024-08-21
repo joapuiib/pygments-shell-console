@@ -94,10 +94,9 @@ class ShellConsoleLexer(Lexer):
             m = self._ps1rgx.match(line)
             ## If line starts with a prompt
             if m:
-                # To support output lexers (say diff output), the output
-                # needs to be broken by prompts whenever the output lexer
-                # changes.
+                curcode = ''
 
+                # If there is output, yield it using the custom lexer
                 if output:
                     if custom_lexer:
                         for i, t, v in custom_lexer.get_tokens_unprocessed(output):
@@ -105,6 +104,7 @@ class ShellConsoleLexer(Lexer):
                             yield pos+i, t, v
                     else:
                         yield pos, Generic.Output, output
+
                     output = ''
                     custom_lexer = None
 
@@ -152,13 +152,6 @@ class ShellConsoleLexer(Lexer):
 
             # Otherwise, we have a normal line
             else:
-                # Add insertions to the current code
-                if insertions:
-                    toks = innerlexer.get_tokens_unprocessed(curcode)
-                    for i, t, v in do_insertions(insertions, toks):
-                        # print(f"\n1. yielding pos={pos+i}, t={t}, v={v}")
-                        yield pos+i, t, v
-
                 if 'diff' in curcode:
                     custom_lexer = difflexer
                 elif curcode.startswith('git lg'):
@@ -169,14 +162,15 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = gitshowlexer
 
                 output += line
-                insertions = []
-                curcode = ''
 
-        if insertions:
-            for i, t, v in do_insertions(insertions,
-                                         innerlexer.get_tokens_unprocessed(curcode)):
-                # print(f"\n4. yielding pos={pos+i}, t={t}, v={v}")
-                yield pos+i, t, v
+            if not backslash_continuation and insertions:
+                for i, t, v in do_insertions(insertions,
+                                             innerlexer.get_tokens_unprocessed(curcode)):
+                    # print(f"\n4. yielding pos={pos+i}, t={t}, v={v}")
+                    yield pos+i, t, v
+
+                insertions = []
+
         if output:
             if custom_lexer:
                 for i, t, v in custom_lexer.get_tokens_unprocessed(output):

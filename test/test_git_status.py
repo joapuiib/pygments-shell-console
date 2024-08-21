@@ -3,6 +3,50 @@ from pygments.token import Token
 from shellconsole_lexer import ShellConsoleLexer
 from git_lexer import GitStatusLexer
 
+def test_git_status_modified():
+    lexer = ShellConsoleLexer()
+    text = (
+        "user@host:~/directory (main) $ git status\n"
+        "On branch main\n"
+        "\n"
+        "Changes not staged for commit:\n"
+        "  (use \"git add <file>...\" to update what will be committed)\n"
+        "  (use \"git restore <file>...\" to discard changes in working directory)\n"
+        "        modified:   README.md\n"
+        "\n"
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+    )
+
+    tokens = list(lexer.get_tokens(text))
+
+    assert tokens == [
+        # Prompt
+        (Token.Generic.Prompt.UserHost, "user@host"),
+        (Token.Generic.Prompt, ":"),
+        (Token.Generic.Prompt.Directory, "~/directory"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt.GitBranch, "(main)"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt, "$"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "git"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "status"),
+        (Token.Text.Whitespace, "\n"),
+        # Status
+        (Token.Generic.Output, "On branch main\n"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Generic.Output, "Changes not staged for commit:\n"),
+        (Token.Generic.Output, "  (use \"git add <file>...\" to update what will be committed)\n"),
+        (Token.Generic.Output, "  (use \"git restore <file>...\" to discard changes in working directory)\n"),
+        (Token.Text.Whitespace, "        "),
+        (Token.Git.Modified, "modified:   README.md"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Generic.Output, "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"),
+    ]
+
+
 def test_full_git_status():
     lexer = ShellConsoleLexer()
     text = (
@@ -71,3 +115,64 @@ def test_full_git_status():
             (Token.Git.Staged, "new file:   README.md"),
             (Token.Text.Whitespace, "\n"),
     ]
+
+def test_git_status_after_empty_command():
+    lexer = ShellConsoleLexer()
+    text = (
+        "user@host:~/directory (main) $ git add README.md\n"
+        "user@host:~/directory (main) $ git status\n"
+        "On branch main\n"
+        "\n"
+        "Changes not staged for commit:\n"
+        "  (use \"git add <file>...\" to update what will be committed)\n"
+        "  (use \"git restore <file>...\" to discard changes in working directory)\n"
+        "        modified:   README.md\n"
+        "\n"
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+    )
+
+    tokens = list(lexer.get_tokens(text))
+
+    assert tokens == [
+        # Prompt
+        (Token.Generic.Prompt.UserHost, "user@host"),
+        (Token.Generic.Prompt, ":"),
+        (Token.Generic.Prompt.Directory, "~/directory"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt.GitBranch, "(main)"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt, "$"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "git"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "add"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "README.md"),
+        (Token.Text.Whitespace, "\n"),
+        # Prompt
+        (Token.Generic.Prompt.UserHost, "user@host"),
+        (Token.Generic.Prompt, ":"),
+        (Token.Generic.Prompt.Directory, "~/directory"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt.GitBranch, "(main)"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt, "$"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "git"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "status"),
+        (Token.Text.Whitespace, "\n"),
+        # Status
+        (Token.Generic.Output, "On branch main\n"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Generic.Output, "Changes not staged for commit:\n"),
+        (Token.Generic.Output, "  (use \"git add <file>...\" to update what will be committed)\n"),
+        (Token.Generic.Output, "  (use \"git restore <file>...\" to discard changes in working directory)\n"),
+        (Token.Text.Whitespace, "        "),
+        (Token.Git.Modified, "modified:   README.md"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Generic.Output, "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"),
+    ]
+
+
