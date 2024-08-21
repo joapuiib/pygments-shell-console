@@ -51,7 +51,7 @@ Changes to be committed:
         new file:   README.md
 
 joapuiib@FP:~/01_introduccio (main) $ git show 8e70293
-commit 8e702933d5dbec9ee71100a1599ae4491085e1aa
+commit 8e702933d5dbec9ee71100a1599ae4491085e1aa (HEAD -> main, tag: v1, origin/main)
 Author: Joan Puigcerver Ibáñez <j.puigcerveribanez@edu.gva.es>
 Date:   Fri Oct 13 16:06:59 2023 +0200
 
