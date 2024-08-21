@@ -2,7 +2,7 @@
 
 from pygments.lexer import Lexer
 from pygments.lexer import RegexLexer, ExtendedRegexLexer, include, bygroups, \
-    default, using, line_re, do_insertions
+    default, using, line_re, do_insertions, inherit
 from pygments.token import Token, Punctuation, Whitespace, \
     Text, Comment, Operator, Keyword, Name, String, Number, Generic
 from pygments.lexers.diff import DiffLexer
@@ -32,7 +32,7 @@ STANDARD_TYPES.update({
     Token.Git.Refs.Branch: 'git-b',
 })
 
-class GitLogLexer(Lexer):
+class GitPrettyLogLexer(Lexer):
     name = "Git"
     aliases = ["git"]
     filenames = ['*.git']
@@ -54,10 +54,10 @@ class GitLogLexer(Lexer):
       r'( +)',                      # 12. Space
       r'(-)',                       # 13. Commit separator
       r'( +)',                      # 14. Space
-      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+)',  # 15. Author
-      r'( +)',                      # 16. Space
-      r'((\([\w ->,:]+\))?)',       # 17. Refs
-      r'$', # End
+      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]*[0-9A-Za-zÀ-ÖØ-öø-ÿ]+)',  # 15. Author
+      r'( *)',                      # 16. Space
+      r'((\([\w ->,:]+\))?)',         # 17. Refs
+      r'\n', # End
     ]
 
     # Combine the regex patterns into a single pattern
@@ -142,11 +142,10 @@ class GitStatusLexer(RegexLexer):
         ],
     }
 
-class GitShowLexer(RegexLexer):
+class GitLogLexer(RegexLexer):
     tokens = {
         'root': [
             (r'^\n', Whitespace),
-            (r'^diff .*\n', using(DiffLexer), 'diff'),
             (r'^(commit [0-9a-f]+)', Token.Git.Show.Header, 'header'),
             (r'^.*\n', Generic.Output),
         ],
@@ -159,6 +158,15 @@ class GitShowLexer(RegexLexer):
             (r'origin/[\w/_-]+', Token.Git.Refs.RemoteBranch),
             (r'[\w/_-]+', Token.Git.Refs.Branch),
             (r'\n', Whitespace, '#pop'),
+        ],
+    }
+
+
+class GitShowLexer(GitLogLexer):
+    tokens = {
+        'root': [
+            (r'^diff .*\n', using(DiffLexer), 'diff'),
+            inherit
         ],
         'diff': [
             (r'^.*\n', using(DiffLexer)),

@@ -1,18 +1,24 @@
 import pytest
 from pygments.token import Token
 from shellconsole_lexer import ShellConsoleLexer
-from git_lexer import GitLogLexer
+from git_lexer import GitStatusLexer
 
-def test_full_git_log():
+def test_git_show():
     lexer = ShellConsoleLexer()
     text = (
-        "user@host:~/directory (main) $ git lga\n"
-        "* f853946 - (7 minutes ago) README: Afegits autors - Mar (origin/feature/author)\n"
-        "| * cc8c388 - (9 minutes ago) LICENSE: Afegida llicència - Pau (origin/feature/license)\n"
-        "* | 9e34bb0 - (15 minutes ago) README: Afegida descripció del projecte - Anna (HEAD -> develop, origin/develop, feature/readme, origin/feature/readme)\n"
-        "|/\n"
-        "* 0fb88ef - (29 minutes ago) 1. Primer commit - Joan Puigcerver (origin/main, origin/HEAD, main)\n"
-    )
+        "user@host:~/directory (main) $ git show\n"
+        "commit c9fc6c856c2d52744b85a6f8d92feac496e60bd6 (HEAD -> main, tag: v1)\n"
+        "Author: Author <author@localhost>\n"
+        "Date:   Mon Oct 16 11:43:20 2023 +0200\n"
+        "\n"
+        "    Added another line to README.md\n"
+        "\n"
+        "commit 8e702933d5dbec9ee71100a1599ae4491085e1aa\n"
+        "Author: Author <author@localhost>\n"
+        "Date:   Fri Oct 13 16:06:59 2023 +0200\n"
+        "\n"
+        "    Added README.md\n"
+)
 
     tokens = list(lexer.get_tokens(text))
 
@@ -27,139 +33,32 @@ def test_full_git_log():
             (Token.Text.Whitespace, " "),
             (Token.Text, "git"),
             (Token.Text.Whitespace, " "),
-            (Token.Text, "lga"),
+            (Token.Text, "show"),
             (Token.Text.Whitespace, "\n"),
             # First commit
-            (Token.Generic.Output, "*",),
+            (Token.Git.Show.Header, "commit c9fc6c856c2d52744b85a6f8d92feac496e60bd6"),
             (Token.Text.Whitespace, " "),
-            (Token.Git.CommitHash, "f853946"),
+            (Token.Git.Show.Header, "("),
+            (Token.Git.Refs.Head, "HEAD"),
             (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
+            (Token.Git.Show.Header, "->"),
             (Token.Text.Whitespace, " "),
-            (Token.Git.CommitDate, "(7 minutes ago)"),
+            (Token.Git.Refs.Branch, "main"),
+            (Token.Git.Show.Header, ","),
             (Token.Text.Whitespace, " "),
-            (Token.Git.CommitMessage, "README: Afegits autors"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitAuthor, "Mar"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.Refs, "(origin/feature/author)"),
+            (Token.Git.Refs.Tag, "tag: v1"),
+            (Token.Git.Show.Header, ")"),
+            (Token.Text.Whitespace, "\n"),
+            (Token.Generic.Output, "Author: Author <author@localhost>\n"),
+            (Token.Generic.Output, "Date:   Mon Oct 16 11:43:20 2023 +0200\n"),
+            (Token.Text.Whitespace, "\n"),
+            (Token.Generic.Output, "    Added another line to README.md\n"),
             (Token.Text.Whitespace, "\n"),
             # Second commit
-            (Token.Git.BranchLine, "| "),
-            (Token.Generic.Output, "*"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitHash, "cc8c388"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitDate, "(9 minutes ago)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitMessage, "LICENSE: Afegida llicència"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitAuthor, "Pau"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.Refs, "(origin/feature/license)"),
+            (Token.Git.Show.Header, "commit 8e702933d5dbec9ee71100a1599ae4491085e1aa"),
             (Token.Text.Whitespace, "\n"),
-            # Third commit
-            (Token.Generic.Output, "*"),
-            (Token.Git.BranchLine, " |"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitHash, "9e34bb0"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitDate, "(15 minutes ago)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitMessage, "README: Afegida descripció del projecte"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitAuthor, "Anna"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.Refs, "(HEAD -> develop, origin/develop, feature/readme, origin/feature/readme)"),
+            (Token.Generic.Output, "Author: Author <author@localhost>\n"),
+            (Token.Generic.Output, "Date:   Fri Oct 13 16:06:59 2023 +0200\n"),
             (Token.Text.Whitespace, "\n"),
-            # Branch line
-            (Token.Git.BranchLine, "|/\n"),
-            # Fourth commit
-            (Token.Generic.Output, "*"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitHash, "0fb88ef"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitDate, "(29 minutes ago)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitMessage, "1. Primer commit"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitAuthor, "Joan Puigcerver"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.Refs, "(origin/main, origin/HEAD, main)"),
-            (Token.Text.Whitespace, "\n"),
-    ]
-
-def test_git_log_with_other_command():
-
-    lexer = ShellConsoleLexer()
-    text = (
-        "user@host:~/directory (main) $ git lga\n"
-        "* f853946 - (7 minutes ago) README: Afegits autors - Mar (origin/feature/author)\n"
-        "(venv) [user@host ~ (main)] $ echo 'Hello, world!'\n"
-    )
-
-    tokens = list(lexer.get_tokens(text))
-
-    assert tokens == [
-            # First command
-            (Token.Generic.Prompt.UserHost, "user@host"),
-            (Token.Generic.Prompt, ":"),
-            (Token.Generic.Prompt.Directory, "~/directory"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt, "$"),
-            (Token.Text.Whitespace, " "),
-            (Token.Text, "git"),
-            (Token.Text.Whitespace, " "),
-            (Token.Text, "lga"),
-            (Token.Text.Whitespace, "\n"),
-            # First commit
-            (Token.Generic.Output, "*",),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitHash, "f853946"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitDate, "(7 minutes ago)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitMessage, "README: Afegits autors"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Output, "-"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.CommitAuthor, "Mar"),
-            (Token.Text.Whitespace, " "),
-            (Token.Git.Refs, "(origin/feature/author)"),
-            (Token.Text.Whitespace, "\n"),
-            # Second command
-            (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt, "["),
-            (Token.Generic.Prompt.UserHost, "user@host"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt.Directory, "~"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Generic.Prompt, "]"),
-            (Token.Text.Whitespace, " "),
-            (Token.Generic.Prompt, "$"),
-            (Token.Text.Whitespace, " "),
-            (Token.Name.Builtin, "echo"),
-            (Token.Text.Whitespace, " "),
-            (Token.Literal.String.Single, "'Hello, world!'"),
-            (Token.Text.Whitespace, "\n"),
+            (Token.Generic.Output, "    Added README.md\n"),
     ]
