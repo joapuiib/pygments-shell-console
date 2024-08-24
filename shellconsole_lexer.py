@@ -8,7 +8,8 @@ from pygments.token import Token, Punctuation, Whitespace, \
 from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
-from git_lexer import GitLogLexer, GitPrettyLogLexer, GitStatusLexer, GitShowLexer
+from git_lexer import GitLexer, GitLogLexer, GitPrettyLogLexer, \
+    GitStatusLexer, GitShowLexer, GitBranchLexer
 from pygments.token import STANDARD_TYPES
 
 import re
@@ -75,10 +76,12 @@ class ShellConsoleLexer(Lexer):
     def get_tokens_unprocessed(self, text):
         innerlexer = self._innerLexerCls(**self.options)
         difflexer = DiffLexer()
+        gitlexer = GitLexer()
         git_log_lexer = GitLogLexer()
         git_pretty_log_lexer = GitPrettyLogLexer()
         gitstatuslexer = GitStatusLexer()
         gitshowlexer = GitShowLexer()
+        gitbranchlexer = GitBranchLexer()
 
         pos = 0
         # Bash command
@@ -163,6 +166,10 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = gitstatuslexer
                 elif curcode.startswith('git show'):
                     custom_lexer = gitshowlexer
+                elif curcode.startswith('git branch'):
+                    custom_lexer = gitbranchlexer
+                elif curcode.startswith('git'):
+                    custom_lexer = gitlexer
 
                 output += line
 

@@ -10,7 +10,13 @@ from pygments.token import STANDARD_TYPES
 
 import re
 
-__all__ = ['GitLexer']
+__all__ = [
+    'GitLexer',
+    'GitStatusLexer',
+    'GitPrettyLogLexer',
+    'GitLogLexer',
+    'GitShowLexer',
+]
 
 STANDARD_TYPES.update({
     Token.Git: 'git',
@@ -19,6 +25,7 @@ STANDARD_TYPES.update({
     Token.Git.CommitDate: 'git-cd',
     Token.Git.CommitMessage: 'git-cm',
     Token.Git.CommitAuthor: 'git-ca',
+    Token.Git.Hint: 'git-hint',
     Token.Git.Refs: 'git-r',
     Token.Git.Untracked: 'git-untr',
     Token.Git.Modified: 'git-mod',
@@ -32,12 +39,23 @@ STANDARD_TYPES.update({
     Token.Git.Refs.Branch: 'git-b',
 })
 
-class GitPrettyLogLexer(Lexer):
+class GitLexer(RegexLexer):
     name = "Git"
     aliases = ["git"]
     filenames = ['*.git']
     version_added = '1.0'
 
+    tokens = {
+        'root': [
+            (r'\n', Whitespace),
+            (r'^hint: (.*?)\n', Token.Git.Hint),
+            (r'^.*$\n', Generic.Output),
+            (r'[^\n]+', Generic.Output),
+        ]
+
+    }
+
+class GitPrettyLogLexer(Lexer):
     _branch_line_rgx = r'([\|\\\/ ]*)'
     _logrgx_groups = [
       _branch_line_rgx,     # 1. Branch line
@@ -111,7 +129,7 @@ class GitStatusLexer(RegexLexer):
             (r'\s*Untracked files:\n', Generic.Output, 'untracked'),
             (r'\s*Changes not staged for commit:\n', Generic.Output, 'modified'),
             (r'\s*Changes to be committed:\n', Generic.Output, 'staged'),
-            (r'^.*\n', Generic.Output),
+            (r'^.*\n', using(GitLexer)),
         ],
         'untracked': [
             (r'^\s*\n', Whitespace, '#pop'),
@@ -147,7 +165,7 @@ class GitLogLexer(RegexLexer):
         'root': [
             (r'^\n', Whitespace),
             (r'^(commit [0-9a-f]+)', Token.Git.Show.Header, 'header'),
-            (r'^.*\n', Generic.Output),
+            (r'^.*\n', using(GitLexer)),
         ],
         'header': [
             (r' +', Whitespace),
@@ -170,5 +188,18 @@ class GitShowLexer(GitLogLexer):
         ],
         'diff': [
             (r'^.*\n', using(DiffLexer)),
+        ],
+    }
+
+class GitBranchLexer(RegexLexer):
+    tokens = {
+        'root': [
+            (r'^\n', Whitespace),
+            (r'^(\* )(.*?)(\n)', bygroups(
+                using(GitLexer),
+                Token.Git.Refs.Branch,
+                Whitespace,
+            )),
+            (r'^.*\n', using(GitLexer)),
         ],
     }
