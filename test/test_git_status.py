@@ -175,4 +175,30 @@ def test_git_status_after_empty_command():
         (Token.Generic.Output, "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"),
     ]
 
+def test_git_status_whit_hint():
+    lexer = ShellConsoleLexer()
+    text = (
+        "user@host:~/directory (main) $ git status\n"
+        "hint: You've added another git status command\n"
+        "On branch main\n"
+    )
 
+    tokens = list(lexer.get_tokens(text))
+
+    assert tokens == [
+        # Prompt
+        (Token.Generic.Prompt.UserHost, "user@host"),
+        (Token.Generic.Prompt, ":"),
+        (Token.Generic.Prompt.Directory, "~/directory"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt.GitBranch, "(main)"),
+        (Token.Text.Whitespace, " "),
+        (Token.Generic.Prompt, "$"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "git"),
+        (Token.Text.Whitespace, " "),
+        (Token.Text, "status"),
+        (Token.Text.Whitespace, "\n"),
+        (Token.Git.Hint, "hint: You've added another git status command\n"),
+        (Token.Generic.Output, "On branch main\n"),
+    ]

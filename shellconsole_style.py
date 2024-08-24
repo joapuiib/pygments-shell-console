@@ -18,6 +18,7 @@ class ShellConsoleStyle(Style):
         Token.Git.CommitDate: "#008000",
         Token.Git.CommitMessage: "#FFFFFF",
         Token.Git.CommitAuthor: "#aaaaaa",
+        Token.Git.Hint: "#aaaa00",
 
         Token.Git.Refs: "#00ffff",
         Token.Git.Refs.Tag: "#ffff00",
