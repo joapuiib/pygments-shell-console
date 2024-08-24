@@ -48,7 +48,7 @@ class GitLexer(RegexLexer):
     tokens = {
         'root': [
             (r'\n', Whitespace),
-            (r'^hint: (.*?)\n', Token.Git.Hint),
+            (r'^hint:(.*?)\n', Token.Git.Hint),
             (r'^.*$\n', Generic.Output),
             (r'[^\n]+', Generic.Output),
         ]
