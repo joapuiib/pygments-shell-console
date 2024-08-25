@@ -202,3 +202,51 @@ def test_git_status_whit_hint():
         (Token.Git.Hint, "hint: You've added another git status command\n"),
         (Token.Generic.Output, "On branch main\n"),
     ]
+
+def test_git_status_unmerged():
+        lexer = ShellConsoleLexer()
+        text = (
+            "user@host:~/directory (main) $ git status\n"
+            "On branch main\n"
+            "You have unmerged paths.\n"
+            "  (fix conflicts and run \"git commit\")\n"
+            "  (use \"git merge --abort\" to abort the merge)\n"
+            "\n"
+            "Unmerged paths:\n"
+            "  (use \"git restore --staged <file>...\" to unstage)\n"
+            "  (use \"git add <file>...\" to mark resolution)\n"
+            "        both modified:   README.md\n"
+            "\n"
+            "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+        )
+
+        tokens = list(lexer.get_tokens(text))
+
+        assert tokens == [
+            (Token.Generic.Prompt.UserHost, "user@host"),
+            (Token.Generic.Prompt, ":"),
+            (Token.Generic.Prompt.Directory, "~/directory"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.GitBranch, "(main)"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt, "$"),
+            (Token.Text.Whitespace, " "),
+            (Token.Text, "git"),
+            (Token.Text.Whitespace, " "),
+            (Token.Text, "status"),
+            (Token.Text.Whitespace, "\n"),
+            # Output
+            (Token.Generic.Output, "On branch main\n"),
+            (Token.Generic.Output, "You have unmerged paths.\n"),
+            (Token.Generic.Output, "  (fix conflicts and run \"git commit\")\n"),
+            (Token.Generic.Output, "  (use \"git merge --abort\" to abort the merge)\n"),
+            (Token.Text.Whitespace, "\n"),
+            (Token.Generic.Output, "Unmerged paths:\n"),
+            (Token.Generic.Output, "  (use \"git restore --staged <file>...\" to unstage)\n"),
+            (Token.Generic.Output, "  (use \"git add <file>...\" to mark resolution)\n"),
+            (Token.Text.Whitespace, "        "),
+            (Token.Git.Unmerged, "both modified:   README.md"),
+            (Token.Text.Whitespace, "\n"),
+            (Token.Text.Whitespace, "\n"),
+            (Token.Generic.Output, "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"),
+        ]
