@@ -29,6 +29,7 @@ STANDARD_TYPES.update({
     Token.Git.Refs: 'git-r',
     Token.Git.Untracked: 'git-untr',
     Token.Git.Modified: 'git-mod',
+    Token.Git.Unmerged: 'git-unm',
     Token.Git.Staged: 'git-stg',
     Token.Git.Show: 'git-show',
     Token.Git.Show.Header: 'git-show-h',
@@ -129,6 +130,7 @@ class GitStatusLexer(RegexLexer):
             (r'\s*Untracked files:\n', Generic.Output, 'untracked'),
             (r'\s*Changes not staged for commit:\n', Generic.Output, 'modified'),
             (r'\s*Changes to be committed:\n', Generic.Output, 'staged'),
+            (r'\s*Unmerged paths:\n', Generic.Output, 'unmerged'),
             (r'^.*\n', using(GitLexer)),
         ],
         'untracked': [
@@ -155,6 +157,15 @@ class GitStatusLexer(RegexLexer):
             (r'^(\s*)([^\n]+)(\n)', bygroups(
                 Whitespace,
                 Token.Git.Staged,
+                Whitespace
+            )),
+        ],
+        'unmerged': [
+            (r'^\s*\n', Whitespace, '#pop'),
+            (r'^\s+\(.*\)\n', Generic.Output),
+            (r'^(\s*)([^\n]+)(\n)', bygroups(
+                Whitespace,
+                Token.Git.Unmerged,
                 Whitespace
             )),
         ],
