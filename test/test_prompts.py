@@ -212,3 +212,17 @@ def test_bash_prompt_with_virtualenv_and_git_branch_and_command_output():
             (Token.Text.Whitespace, "\n"),
             (Token.Generic.Output, "Hello world!\n"),
     ]
+
+def test_bash_prompt_with_spaces():
+    lexer = ShellConsoleLexer()
+    prompt = "Fri Sep 13 09:30:00 user@host:~/project $"
+
+    tokens = list(lexer.get_tokens(prompt))
+
+    assert tokens == [
+            (Token.Generic.Prompt.UserHost, "Fri Sep 13 09:30:00 user@host"),
+            (Token.Generic.Prompt, ":"),
+            (Token.Generic.Prompt.Directory, "~/project"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt, "$\n"),
+    ]
