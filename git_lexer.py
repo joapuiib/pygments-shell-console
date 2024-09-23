@@ -26,6 +26,9 @@ STANDARD_TYPES.update({
     Token.Git.CommitMessage: 'git-cm',
     Token.Git.CommitAuthor: 'git-ca',
     Token.Git.Hint: 'git-hint',
+    Token.Git.Warning: 'git-warning',
+    Token.Git.Error: 'git-error',
+    Token.Git.Fatal: 'git-fatal',
     Token.Git.Refs: 'git-r',
     Token.Git.Untracked: 'git-untr',
     Token.Git.Modified: 'git-mod',
@@ -49,7 +52,10 @@ class GitLexer(RegexLexer):
     tokens = {
         'root': [
             (r'\n', Whitespace),
+            (r'^error:(.*?)\n', Token.Git.Error),
+            (r'^fatal:(.*?)\n', Token.Git.Fatal),
             (r'^hint:(.*?)\n', Token.Git.Hint),
+            (r'^warning:(.*?)\n', Token.Git.Warning),
             (r'^.*$\n', Generic.Output),
             (r'[^\n]+', Generic.Output),
         ]
