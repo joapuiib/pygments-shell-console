@@ -17,6 +17,7 @@ import re
 __all__ = ['ShellConsoleLexer']
 
 STANDARD_TYPES.update({
+    Token.Generic.Prompt.Whitespace: 'gp-w',
     Token.Generic.Prompt.UserHost: 'gp-uh',
     Token.Generic.Prompt.Directory: 'gp-d',
     Token.Generic.Prompt.GitBranch: 'gp-gb',
@@ -54,18 +55,18 @@ class ShellConsoleLexer(Lexer):
 
     _ps1_tokens = [
             Token.Generic.Prompt.VirtualEnv,
-            Whitespace,
+            Token.Generic.Prompt.Whitespace,
             Token.Generic.Prompt.UserHost,
-            Whitespace,
+            Token.Generic.Prompt.Whitespace,
             Token.Generic.Prompt, # Separator: colon
-            Whitespace, # Separator: space
-            Whitespace,
+            Token.Generic.Prompt.Whitespace, # Separator: space
+            Token.Generic.Prompt.Whitespace,
             Token.Generic.Prompt.Directory,
-            Whitespace,
+            Token.Generic.Prompt.Whitespace,
             Token.Generic.Prompt.GitBranch,
-            Whitespace,
+            Token.Generic.Prompt.Whitespace,
             Token.Generic.Prompt,
-            Whitespace
+            Token.Generic.Prompt.Whitespace,
     ]
 
 
