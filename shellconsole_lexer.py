@@ -170,7 +170,7 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = gitshowlexer
                 elif curcode.startswith('git branch'):
                     custom_lexer = gitbranchlexer
-                elif curcode.startswith('git merge') or curcode.startswith('git stash show'):
+                elif curcode.startswith('git merge') or curcode.startswith('git pull') or curcode.startswith('git stash show'):
                     custom_lexer = mergelexer
                 elif curcode.startswith('git'):
                     custom_lexer = gitlexer
