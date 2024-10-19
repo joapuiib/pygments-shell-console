@@ -25,7 +25,7 @@ def test_basic_bash_prompt_with_space():
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -39,9 +39,9 @@ def test_bash_prompt_with_git_branch():
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -53,11 +53,11 @@ def test_bash_prompt_with_virtualenv():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -69,13 +69,13 @@ def test_bash_prompt_with_virtualenv_and_git_branch():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 def test_bracketed_bash_prompt():
@@ -90,7 +90,7 @@ def test_bracketed_bash_prompt():
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
             (Token.Generic.Prompt, "]"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -105,10 +105,10 @@ def test_bracketed_bash_prompt_with_git_branch():
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
             (Token.Generic.Prompt, "]"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -120,13 +120,13 @@ def test_bracketed_bash_prompt_with_virtualenv():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "["),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
             (Token.Generic.Prompt, "]"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]
 
@@ -138,15 +138,15 @@ def test_bash_prompt_with_virtualenv_and_git_branch_and_command():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Name.Builtin, "echo"),
             (Token.Text.Whitespace, " "),
             (Token.Literal.String.Single, "'Hello world!'"),
@@ -164,15 +164,15 @@ def test_bash_prompt_with_virtualenv_and_git_branch_and_command_backslash():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Name.Builtin, "echo"),
             (Token.Text.Whitespace, " "),
             (Token.Literal.String.Single, "'Hello world!'"),
@@ -197,15 +197,15 @@ def test_bash_prompt_with_virtualenv_and_git_branch_and_command_output():
 
     assert tokens == [
             (Token.Generic.Prompt.VirtualEnv, "(venv)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.UserHost, "user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt.GitBranch, "(main)"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Name.Builtin, "echo"),
             (Token.Text.Whitespace, " "),
             (Token.Literal.String.Single, "'Hello world!'"),
@@ -223,6 +223,6 @@ def test_bash_prompt_with_spaces():
             (Token.Generic.Prompt.UserHost, "Fri Sep 13 09:30:00 user@host"),
             (Token.Generic.Prompt, ":"),
             (Token.Generic.Prompt.Directory, "~/project"),
-            (Token.Text.Whitespace, " "),
+            (Token.Generic.Prompt.Whitespace, " "),
             (Token.Generic.Prompt, "$\n"),
     ]

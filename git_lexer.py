@@ -220,3 +220,23 @@ class GitBranchLexer(RegexLexer):
             (r'^.*\n', using(GitLexer)),
         ],
     }
+
+class GitMergeLexer(RegexLexer):
+    tokens = {
+        'root': [
+            (r'^\n', Whitespace),
+            (r'^( )(\S)( )(|)( )(\d+)( )(\+*)(\-*)(\n)', bygroups(
+                Whitespace,
+                Generic.Output,
+                Whitespace,
+                Generic.Output,
+                Whitespace,
+                Generic.Output,
+                Whitespace,
+                Generic.Inserted,
+                Generic.Deleted,
+                Whitespace,
+            )),
+            (r'^.*\n', using(GitLexer)),
+        ],
+    }

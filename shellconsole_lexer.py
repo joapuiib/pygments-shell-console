@@ -9,7 +9,7 @@ from pygments.lexers.diff import DiffLexer
 from pygments.lexers.shell import BashLexer
 from pygments.lexers.diff import DiffLexer
 from git_lexer import GitLexer, GitLogLexer, GitPrettyLogLexer, \
-    GitStatusLexer, GitShowLexer, GitBranchLexer
+    GitStatusLexer, GitShowLexer, GitBranchLexer, GitMergeLexer
 from pygments.token import STANDARD_TYPES
 
 import re
@@ -83,6 +83,7 @@ class ShellConsoleLexer(Lexer):
         gitstatuslexer = GitStatusLexer()
         gitshowlexer = GitShowLexer()
         gitbranchlexer = GitBranchLexer()
+        mergelexer = GitMergeLexer()
 
         pos = 0
         # Bash command
@@ -157,7 +158,7 @@ class ShellConsoleLexer(Lexer):
 
             # Otherwise, we have a normal line
             else:
-                if 'diff' in curcode:
+                if 'diff' in curcode or curcode.startswith('git stash show -p'):
                     custom_lexer = difflexer
                 elif curcode.startswith('git lg') or curcode.startswith('git log --graph'):
                     custom_lexer = git_pretty_log_lexer
@@ -169,6 +170,8 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = gitshowlexer
                 elif curcode.startswith('git branch'):
                     custom_lexer = gitbranchlexer
+                elif curcode.startswith('git merge') or curcode.startswith('git stash show'):
+                    custom_lexer = mergelexer
                 elif curcode.startswith('git'):
                     custom_lexer = gitlexer
 
