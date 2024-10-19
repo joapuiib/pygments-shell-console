@@ -164,7 +164,7 @@ class ShellConsoleLexer(Lexer):
                     custom_lexer = git_pretty_log_lexer
                 elif curcode.startswith('git log'):
                     custom_lexer = git_log_lexer
-                elif curcode.startswith('git status'):
+                elif curcode.startswith('git status') or curcode.startswith('git stash apply'):
                     custom_lexer = gitstatuslexer
                 elif curcode.startswith('git show'):
                     custom_lexer = gitshowlexer
