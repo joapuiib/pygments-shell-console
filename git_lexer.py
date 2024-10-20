@@ -74,13 +74,13 @@ class GitPrettyLogLexer(Lexer):
       r'(-)',               # 7. Commit separator
       r'( +)',              # 8. Space
       r'(\([0-9A-Za-zÀ-ÖØ-öø-ÿ ]+\))',  # 9. Date
-      r'(\s+)',                         # 10. Space
-      r'([0-9A-Za-zÀ-ÖØ-öø-ÿ \.\:\_\'\"\!\?\(\)\\\/\-]+)', # 11. Commit message
-      r'( +)',                      # 12. Space
-      r'(-)',                       # 13. Commit separator
-      r'( +)',                      # 14. Space
+      r'(\s+)',    # 10. Space
+      r'([^\n]+)', # 11. Commit message
+      r'( +)',     # 12. Space
+      r'(-)',      # 13. Commit separator
+      r'( +)',     # 14. Space
       r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]*[0-9A-Za-zÀ-ÖØ-öø-ÿ]+)',  # 15. Author
-      r'( *)',                      # 16. Space
+      r'( *)',                        # 16. Space
       r'((\([\w ->,:]+\))?)',         # 17. Refs
       r'\n', # End
     ]
