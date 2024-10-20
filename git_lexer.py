@@ -63,7 +63,7 @@ class GitLexer(RegexLexer):
     }
 
 class GitPrettyLogLexer(Lexer):
-    _branch_line_rgx = r'([\|\\\/ ]*)'
+    _branch_line_rgx = r'([\|\\\/ _]*)'
     _logrgx_groups = [
       _branch_line_rgx,     # 1. Branch line
       r'(\*)',              # 2. Commit asterisk
