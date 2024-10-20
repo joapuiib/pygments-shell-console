@@ -220,3 +220,60 @@ def test_simple_git_log():
             (Token.Git.CommitAuthor, "Joan Puigcerver"),
             (Token.Text.Whitespace, "\n"),
     ]
+
+def test_git_log_with_commit_message_commas():
+    lexer = ShellConsoleLexer()
+    text = (
+        "user@host:~/directory (main) $ git lg\n"
+        "* f853946 - (7 minutes ago) README: Afegits autors - Mar (main)\n"
+        "* 0fb88ef - (29 minutes ago) Canvis A, B i C - Joan Puigcerver"
+    )
+
+    tokens = list(lexer.get_tokens(text))
+
+    assert tokens == [
+            (Token.Generic.Prompt.UserHost, "user@host"),
+            (Token.Generic.Prompt, ":"),
+            (Token.Generic.Prompt.Directory, "~/directory"),
+            (Token.Generic.Prompt.Whitespace, " "),
+            (Token.Generic.Prompt.GitBranch, "(main)"),
+            (Token.Generic.Prompt.Whitespace, " "),
+            (Token.Generic.Prompt, "$"),
+            (Token.Generic.Prompt.Whitespace, " "),
+            (Token.Text, "git"),
+            (Token.Text.Whitespace, " "),
+            (Token.Text, "lg"),
+            (Token.Text.Whitespace, "\n"),
+            # First commit
+            (Token.Generic.Output, "*",),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitHash, "f853946"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Output, "-"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitDate, "(7 minutes ago)"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitMessage, "README: Afegits autors"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Output, "-"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitAuthor, "Mar"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.Refs, "(main)"),
+            (Token.Text.Whitespace, "\n"),
+            # Second commit
+            (Token.Generic.Output, "*"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitHash, "0fb88ef"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Output, "-"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitDate, "(29 minutes ago)"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitMessage, "Canvis A, B i C"),
+            (Token.Text.Whitespace, " "),
+            (Token.Generic.Output, "-"),
+            (Token.Text.Whitespace, " "),
+            (Token.Git.CommitAuthor, "Joan Puigcerver"),
+            (Token.Text.Whitespace, "\n"),
+    ]
