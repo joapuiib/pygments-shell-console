@@ -38,11 +38,11 @@ class ShellConsoleLexer(Lexer):
         r'(?P<venv>\([^\)]*\))?', # Virtualenv
         r'(\s*)?', # Whitespace
         r'\[?', # Start bracketed prompt
-        r'(?P<user_host>[\S @]+@[^\s]+?)', # user@host
+        r'(?P<user_host>[\S @]+@[^\s]+?)?', # user@host
         r'(\s*)', # Whitespace
-        r'(?:(\:)|(\s+))', # Separator: colon or space
+        r'(?:(\:)|(\s+))?', # Separator: colon or space
         r'(\s*)', # Whitespace
-        r'(?P<current_dir>[^\s\]]+)', # Current directory
+        r'(?P<current_dir>[^\s\]:]+)?', # Current directory
         r'(?:(\s+)(?P<git_branch>\([^)]+\)))?', # Whitespace + Git branch
         r'\]?', # End bracketed prompt
         r'(\s*)', # Whitespace
