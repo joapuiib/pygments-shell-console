@@ -2,6 +2,21 @@ import pytest
 from pygments.token import Token
 from shellconsole_lexer import ShellConsoleLexer
 
+def test_empty_bash_prompt():
+    lexer = ShellConsoleLexer()
+    prompt = "$ echo Hello"
+
+    tokens = list(lexer.get_tokens(prompt))
+
+    assert tokens == [
+            (Token.Generic.Prompt, "$"),
+            (Token.Generic.Prompt.Whitespace, " "),
+            (Token.Name.Builtin, "echo"),
+            (Token.Text.Whitespace, " "),
+            (Token.Text, "Hello"),
+            (Token.Text.Whitespace, "\n"),
+    ]
+
 def test_basic_bash_prompt():
     lexer = ShellConsoleLexer()
     prompt = "user@host:~$"
