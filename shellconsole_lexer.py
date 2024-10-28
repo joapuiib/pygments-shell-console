@@ -46,7 +46,7 @@ class ShellConsoleLexer(Lexer):
         r'(?:(\s+)(?P<git_branch>\([^)]+\)))?', # Whitespace + Git branch
         r'\]?', # End bracketed prompt
         r'(\s*)', # Whitespace
-        r'([$#%]\n?)', # End of prompt
+        r'((?:[$%]|(?:(?<!^)#))\n?)', # End of prompt
         r'(\s*)', # Whitespace
         r'(?P<command>.*\n?)' # Command
     ]
