@@ -17,6 +17,16 @@ def test_empty_bash_prompt():
             (Token.Text.Whitespace, "\n"),
     ]
 
+def test_empty_root_bash_prompt_not_allowed():
+    lexer = ShellConsoleLexer()
+    prompt = "# echo Hello"
+
+    tokens = list(lexer.get_tokens(prompt))
+
+    assert tokens == [
+            (Token.Generic.Output, "# echo Hello\n"),
+    ]
+
 def test_basic_bash_prompt():
     lexer = ShellConsoleLexer()
     prompt = "user@host:~$"
