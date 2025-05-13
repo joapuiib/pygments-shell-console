@@ -80,8 +80,10 @@ class GitPrettyLogLexer(Lexer):
       r'(-)',      # 13. Commit separator
       r'( +)',     # 14. Space
       r'([0-9A-Za-zÀ-ÖØ-öø-ÿ ]*[0-9A-Za-zÀ-ÖØ-öø-ÿ]+)',  # 15. Author
-      r'( *)',                        # 16. Space
-      r'((\([\w ->,:]+\))?)',         # 17. Refs
+      r'( *)',                      # 16. Space
+      r'(\([\w ->,:]+\))?',         # 17. Refs
+      r'( *)',                    # 18. Space
+      r'(#[^\n]*)?',               # 19. Comment
       r'\n', # End
     ]
 
@@ -103,6 +105,8 @@ class GitPrettyLogLexer(Lexer):
       15: Token.Git.CommitAuthor,
       16: Whitespace,
       17: Token.Git.Refs,
+      18: Whitespace,
+      19: Comment,
     }
 
     def get_tokens_unprocessed(self, text):
@@ -116,12 +120,11 @@ class GitPrettyLogLexer(Lexer):
 
             ## Line is log
             if match_log:
-                for i in range(1, len(match_log.groups())):
+                for i in range(1, len(match_log.groups()) + 1):
                     if match_log.group(i):
-                        if self._log_tokens.get(i):
-                            yield match_log.start(i), self._log_tokens[i], match_log.group(i)
-                        else:
-                            yield match_log.start(i), Generic.Output, match_log.group(i)
+                        token = self._log_tokens.get(i, Generic.Output)
+                        yield match_log.start(i), token, match_log.group(i)
+
                 yield match.end(), Whitespace, '\n'
             elif match_branch_line:
                 yield match.start(), Token.Git.BranchLine, line
