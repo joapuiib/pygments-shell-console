@@ -1,6 +1,6 @@
 import pytest
 from pygments.token import Token
-from shellconsole_lexer import ShellConsoleLexer
+from pygments_shell_console import ShellConsoleLexer
 
 def test_git_stash_show():
     lexer = ShellConsoleLexer()

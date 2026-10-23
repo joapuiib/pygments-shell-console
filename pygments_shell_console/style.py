@@ -1,9 +1,9 @@
-"""An example plugin style for Pygments."""
+"""Pygments style for the shell console and git tokens."""
 
 from pygments.style import Style
-from pygments.token import Token, Punctuation, Whitespace, \
-    Text, Comment, Operator, Keyword, Name, String, Number, Generic
 from pygments.styles.default import DefaultStyle
+from pygments.token import Generic, Token
+
 
 class ShellConsoleStyle(Style):
     styles = DefaultStyle.styles.copy()
@@ -16,9 +16,12 @@ class ShellConsoleStyle(Style):
         Token.Git.BranchLine: "#f00",
         Token.Git.CommitHash: "#00f",
         Token.Git.CommitDate: "#008000",
-        Token.Git.CommitMessage: "#FFFFFF",
         Token.Git.CommitAuthor: "#aaaaaa",
         Token.Git.Hint: "#aaaa00",
+        Token.Git.Warning: "#aaaa00",
+        Token.Git.Error: "#f00",
+        Token.Git.Fatal: "bold #f00",
+        Token.Git.Show.Header: "#aaaa00",
 
         Token.Git.Refs: "#00ffff",
         Token.Git.Refs.Tag: "#ffff00",
@@ -29,6 +32,7 @@ class ShellConsoleStyle(Style):
 
         Token.Git.Untracked: "#f00",
         Token.Git.Modified: "#f00",
+        Token.Git.Unmerged: "#f00",
         Token.Git.Staged: "#008000",
     })
     del styles[Token.Generic.Prompt]

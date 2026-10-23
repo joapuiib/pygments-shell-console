@@ -1,7 +1,7 @@
 import pytest
 from pygments.token import Token
-from shellconsole_lexer import ShellConsoleLexer
-from git_lexer import GitPrettyLogLexer
+from pygments_shell_console import ShellConsoleLexer
+from pygments_shell_console import GitPrettyLogLexer
 
 def test_full_git_log():
     lexer = ShellConsoleLexer()

@@ -1,7 +1,7 @@
 import pytest
 from pygments.token import Token
-from shellconsole_lexer import ShellConsoleLexer
-from git_lexer import GitStatusLexer
+from pygments_shell_console import ShellConsoleLexer
+from pygments_shell_console import GitStatusLexer
 
 def test_git_branch():
     lexer = ShellConsoleLexer()
